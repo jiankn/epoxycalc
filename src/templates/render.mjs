@@ -1,0 +1,728 @@
+const FORM_TEMPLATES = {
+  general: () => `
+    <div class="field-grid field-grid--three">
+      ${unitToggle()}
+      ${shapeSelect("Shape", "shape", [
+        ["rectangle", "Rectangle"],
+        ["round", "Round"]
+      ])}
+      ${numberField("Waste buffer (%)", "wastePct", "8", "0.1")}
+    </div>
+    <div class="field-grid field-grid--three" data-group="rectangle">
+      ${numberField("Length", "length", "48", "0.1")}
+      ${numberField("Width", "width", "18", "0.1")}
+      ${numberField("Depth", "depth", "1.25", "0.01")}
+    </div>
+    <div class="field-grid field-grid--two is-hidden" data-group="round">
+      ${numberField("Diameter", "diameter", "24", "0.1")}
+      ${numberField("Depth", "depthRound", "0.5", "0.01")}
+    </div>
+    ${priceField()}
+  `,
+  coverage: () => `
+    <div class="field-grid field-grid--three">
+      ${unitToggle()}
+      ${numberField("Waste buffer (%)", "wastePct", "10", "0.1")}
+      ${numberField("Thickness", "depth", "0.125", "0.001")}
+    </div>
+    <div class="field-grid field-grid--two">
+      ${numberField("Length", "length", "72", "0.1")}
+      ${numberField("Width", "width", "30", "0.1")}
+    </div>
+    ${priceField()}
+  `,
+  volume: () => `
+    <div class="field-grid field-grid--three">
+      ${unitToggle()}
+      ${shapeSelect("Shape", "shape", [
+        ["rectangle", "Rectangle"],
+        ["round", "Round"]
+      ])}
+      ${numberField("Waste buffer (%)", "wastePct", "8", "0.1")}
+    </div>
+    <div class="field-grid field-grid--three" data-group="rectangle">
+      ${numberField("Length", "length", "30", "0.1")}
+      ${numberField("Width", "width", "12", "0.1")}
+      ${numberField("Depth", "depth", "2", "0.01")}
+    </div>
+    <div class="field-grid field-grid--two is-hidden" data-group="round">
+      ${numberField("Diameter", "diameter", "18", "0.1")}
+      ${numberField("Depth", "depthRound", "1.25", "0.01")}
+    </div>
+    ${priceField()}
+  `,
+  river: () => `
+    <div class="field-grid field-grid--four">
+      ${unitToggle()}
+      ${shapeSelect("Mode", "riverMode", [
+        ["quick", "Quick"],
+        ["segment", "Segment"]
+      ])}
+      ${numberField("Waste buffer (%)", "wastePct", "12", "0.1")}
+      ${numberField("Price / gallon", "pricePerGallon", "95", "0.01")}
+    </div>
+    <div class="field-grid field-grid--three">
+      ${numberField("Length", "length", "72", "0.1")}
+      ${numberField("Target depth", "depth", "1.5", "0.01")}
+      ${numberField("Average width", "avgWidth", "6", "0.1")}
+    </div>
+    <div class="field-grid field-grid--two checkbox-row">
+      ${checkboxField("Add seepage buffer", "includeSeepage", true)}
+      ${checkboxField("Add seal-coat buffer", "includeSeal", true)}
+    </div>
+    <div class="segment-block is-hidden" data-segment-block>
+      <div class="segment-block__head">
+        <h3>Segment widths</h3>
+        <button class="button button--quiet" type="button" data-add-segment>Add segment</button>
+      </div>
+      <div class="segment-list" data-segment-list>
+        ${segmentField(1, "4.5")}
+        ${segmentField(2, "6.0")}
+        ${segmentField(3, "7.5")}
+      </div>
+    </div>
+  `,
+  "deep-pour": () => `
+    <div class="field-grid field-grid--four">
+      ${unitToggle()}
+      ${numberField("Waste buffer (%)", "wastePct", "10", "0.1")}
+      ${numberField("Max layer depth", "maxDepth", "2", "0.01")}
+      ${numberField("Price / gallon", "pricePerGallon", "105", "0.01")}
+    </div>
+    <div class="field-grid field-grid--three">
+      ${numberField("Length", "length", "48", "0.1")}
+      ${numberField("Width", "width", "14", "0.1")}
+      ${numberField("Total depth", "depth", "2.5", "0.01")}
+    </div>
+  `,
+  surface: () => `
+    <div class="field-grid field-grid--four">
+      ${unitToggle()}
+      ${numberField("Waste buffer (%)", "wastePct", "8", "0.1")}
+      ${numberField("Thickness", "depth", "0.125", "0.001")}
+      ${numberField("Price / gallon", "pricePerGallon", "78", "0.01")}
+    </div>
+    <div class="field-grid field-grid--two">
+      ${numberField("Length", "length", "72", "0.1")}
+      ${numberField("Width", "width", "24", "0.1")}
+    </div>
+  `,
+  "garage-floor": () => `
+    <div class="field-grid field-grid--four">
+      ${unitToggle()}
+      ${numberField("Coats", "coats", "2", "1")}
+      ${numberField("Coverage / gallon (sq ft)", "coverageRate", "160", "1")}
+      ${numberField("Waste buffer (%)", "wastePct", "7", "0.1")}
+    </div>
+    <div class="field-grid field-grid--three">
+      ${numberField("Length", "length", "22", "0.1")}
+      ${numberField("Width", "width", "20", "0.1")}
+      ${numberField("Price / gallon", "pricePerGallon", "62", "0.01")}
+    </div>
+  `,
+  "void-fill": () => `
+    <div class="field-grid field-grid--four">
+      ${unitToggle()}
+      ${numberField("Length", "length", "6", "0.1")}
+      ${numberField("Width", "width", "2.5", "0.1")}
+      ${numberField("Depth", "depth", "1", "0.01")}
+    </div>
+    <div class="field-grid field-grid--three">
+      ${numberField("Waste buffer (%)", "wastePct", "15", "0.1")}
+      ${numberField("Price / gallon", "pricePerGallon", "88", "0.01")}
+      ${checkboxField("Overfill for sanding", "includeSeal", true)}
+    </div>
+  `,
+  round: () => `
+    <div class="field-grid field-grid--four">
+      ${unitToggle()}
+      ${numberField("Diameter", "diameter", "28", "0.1")}
+      ${numberField("Depth", "depth", "0.75", "0.01")}
+      ${numberField("Waste buffer (%)", "wastePct", "8", "0.1")}
+    </div>
+    ${priceField()}
+  `,
+  cost: () => `
+    <div class="field-grid field-grid--four">
+      ${shapeSelect("Quantity unit", "costUnit", [
+        ["gallons", "Gallons"],
+        ["liters", "Liters"]
+      ])}
+      ${numberField("Quantity needed", "quantity", "3", "0.01")}
+      ${numberField("Waste buffer (%)", "wastePct", "8", "0.1")}
+      ${numberField("Price / gallon", "pricePerGallon", "95", "0.01")}
+    </div>
+  `,
+  converter: () => `
+    <div class="field-grid field-grid--four">
+      ${numberField("Value", "quantity", "231", "0.01")}
+      ${shapeSelect("From unit", "fromUnit", [
+        ["cubicInches", "Cubic inches"],
+        ["gallons", "Gallons"],
+        ["quarts", "Quarts"],
+        ["fluidOunces", "Fluid ounces"],
+        ["liters", "Liters"],
+        ["milliliters", "Milliliters"]
+      ])}
+      ${shapeSelect("To unit", "toUnit", [
+        ["gallons", "Gallons"],
+        ["quarts", "Quarts"],
+        ["fluidOunces", "Fluid ounces"],
+        ["liters", "Liters"],
+        ["milliliters", "Milliliters"],
+        ["cubicInches", "Cubic inches"]
+      ])}
+      ${shapeSelect("Display system", "unit", [
+        ["imperial", "Imperial"],
+        ["metric", "Metric"]
+      ])}
+    </div>
+  `
+};
+
+function escapeHtml(value = "") {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function hrefFor(slug) {
+  return slug ? `/${slug}/` : "/";
+}
+
+function shapeSelect(label, name, options) {
+  return `
+    <label class="field">
+      <span>${escapeHtml(label)}</span>
+      <select name="${escapeHtml(name)}">
+        ${options
+          .map(([value, text]) => `<option value="${escapeHtml(value)}">${escapeHtml(text)}</option>`)
+          .join("")}
+      </select>
+    </label>
+  `;
+}
+
+function numberField(label, name, value, step) {
+  return `
+    <label class="field">
+      <span>${escapeHtml(label)}</span>
+      <input type="number" name="${escapeHtml(name)}" value="${escapeHtml(value)}" step="${escapeHtml(step)}" inputmode="decimal" />
+    </label>
+  `;
+}
+
+function checkboxField(label, name, checked = false) {
+  return `
+    <label class="check">
+      <input type="checkbox" name="${escapeHtml(name)}" ${checked ? "checked" : ""} />
+      <span>${escapeHtml(label)}</span>
+    </label>
+  `;
+}
+
+function unitToggle() {
+  return shapeSelect("Unit system", "unit", [
+    ["imperial", "Imperial"],
+    ["metric", "Metric"]
+  ]);
+}
+
+function priceField() {
+  return `
+    <div class="field-grid field-grid--one">
+      ${numberField("Price / gallon", "pricePerGallon", "85", "0.01")}
+    </div>
+  `;
+}
+
+function segmentField(index, value) {
+  return `
+    <label class="field field--segment">
+      <span>Segment ${index} width</span>
+      <input type="number" name="segmentWidth${index}" value="${escapeHtml(value)}" step="0.1" inputmode="decimal" />
+    </label>
+  `;
+}
+
+function renderFaqs(faqs = []) {
+  if (!faqs.length) return "";
+  return `
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">FAQ</p>
+        <h2>Questions people ask before buying epoxy</h2>
+      </div>
+      <div class="faq-list">
+        ${faqs
+          .map(
+            (item) => `
+            <details class="faq">
+              <summary>${escapeHtml(item.q)}</summary>
+              <p>${escapeHtml(item.a)}</p>
+            </details>
+          `
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderCards(cards = []) {
+  if (!cards?.length) return "";
+  return `
+    <div class="card-grid">
+      ${cards
+        .map((card) => {
+          const href = card.slug ? hrefFor(card.slug) : "#";
+          return `
+            <article class="mini-card">
+              <h3>${escapeHtml(card.title)}</h3>
+              <p>${escapeHtml(card.text)}</p>
+              ${card.slug ? `<a class="text-link" href="${href}">Open page</a>` : ""}
+            </article>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function renderRelated(page, pageMap) {
+  const relatedPages = (page.related || [])
+    .map((slug) => pageMap.get(slug))
+    .filter(Boolean);
+
+  if (!relatedPages.length) return "";
+
+  return `
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Related Pages</p>
+        <h2>Keep moving through the same intent cluster</h2>
+      </div>
+      <div class="card-grid">
+        ${relatedPages
+          .map(
+            (relatedPage) => `
+            <article class="mini-card">
+              <h3>${escapeHtml(relatedPage.h1)}</h3>
+              <p>${escapeHtml(relatedPage.description)}</p>
+              <a class="text-link" href="${hrefFor(relatedPage.slug)}">Visit ${escapeHtml(relatedPage.h1)}</a>
+            </article>
+          `
+          )
+          .join("")}
+      </div>
+    </section>
+  `;
+}
+
+function renderBullets(title, bullets = [], className = "") {
+  if (!bullets.length) return "";
+  return `
+    <section class="section ${className}">
+      <div class="section-heading">
+        <h2>${escapeHtml(title)}</h2>
+      </div>
+      <ul class="bullet-list">
+        ${bullets.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+      </ul>
+    </section>
+  `;
+}
+
+function renderGuideSections(sections = []) {
+  return sections
+    .map((section) => `
+      <section class="section">
+        <div class="section-heading">
+          <h2>${escapeHtml(section.title)}</h2>
+        </div>
+        ${section.body ? `<p class="lead">${escapeHtml(section.body)}</p>` : ""}
+        ${section.points ? `<ul class="bullet-list">${section.points.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul>` : ""}
+        ${section.faqs ? renderFaqs(section.faqs) : ""}
+        ${section.cards ? renderCards(section.cards) : ""}
+        ${section.contactEmail ? `<p><a class="text-link" href="mailto:${escapeHtml(section.contactEmail)}">${escapeHtml(section.contactEmail)}</a></p>` : ""}
+      </section>
+    `)
+    .join("");
+}
+
+function renderHero(page) {
+  return `
+    <section class="hero">
+      <div class="hero__copy">
+        <p class="eyebrow">${escapeHtml(page.eyebrow || "Epoxy Planner")}</p>
+        <h1>${escapeHtml(page.h1)}</h1>
+        <p class="hero__intro">${escapeHtml(page.intro || page.description)}</p>
+        ${
+          page.primaryKeyword
+            ? `
+              <div class="keyword-strip">
+                <span class="chip chip--strong">${escapeHtml(page.primaryKeyword)}</span>
+                ${(page.supportingKeywords || []).map((keyword) => `<span class="chip">${escapeHtml(keyword)}</span>`).join("")}
+              </div>
+            `
+            : ""
+        }
+      </div>
+    </section>
+  `;
+}
+
+function renderCalculator(page) {
+  const formMarkup = FORM_TEMPLATES[page.calculatorType] ? FORM_TEMPLATES[page.calculatorType]({ page }) : "";
+  return `
+    <section class="section">
+      <div class="calculator-shell">
+        <div class="calculator-panel">
+          <div class="section-heading section-heading--compact">
+            <p class="eyebrow">Calculator</p>
+            <h2>Plan the project in one pass</h2>
+          </div>
+          <form class="calculator-root" data-calculator-type="${escapeHtml(page.calculatorType)}" novalidate>
+            ${formMarkup}
+            <p class="field-note">${escapeHtml(page.note || "Results update as you type. Use the breakdown to compare raw math, planning buffers, and the order-ready recommendation.")}</p>
+            <p class="form-error" role="alert" aria-live="polite" data-form-error></p>
+          </form>
+        </div>
+        <div class="result-panel" data-result-panel>
+          <div class="result-panel__hero">
+            <p class="eyebrow">${escapeHtml(page.resultEyebrow || "Recommended order")}</p>
+            <div class="result-big" data-result-primary>--</div>
+            <p class="result-caption" data-result-secondary>Start with the inputs to generate an order-ready estimate.</p>
+          </div>
+          <div class="stat-grid">
+            <article class="stat-card">
+              <p>${escapeHtml(page.statLabels?.raw || "Raw volume")}</p>
+              <strong data-stat-raw>--</strong>
+            </article>
+            <article class="stat-card">
+              <p>${escapeHtml(page.statLabels?.split || "Part A / Part B")}</p>
+              <strong data-stat-split>--</strong>
+            </article>
+            <article class="stat-card">
+              <p>${escapeHtml(page.statLabels?.cost || "Projected cost")}</p>
+              <strong data-stat-cost>--</strong>
+            </article>
+            <article class="stat-card">
+              <p>${escapeHtml(page.statLabels?.layers || "Layer guidance")}</p>
+              <strong data-stat-layers>--</strong>
+            </article>
+          </div>
+          <div class="result-panel__why">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Why This Estimate Changed</p>
+              <h3>What moved the number</h3>
+            </div>
+            <ul class="stack-list" data-breakdown-list>
+              <li>Enter the form values to see raw volume, buffer, and recommendation.</li>
+            </ul>
+          </div>
+          <div class="result-panel__compare">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Compare Scenarios</p>
+              <h3>${escapeHtml(page.compareLabel || "Baseline vs conservative")}</h3>
+            </div>
+            <div class="compare-grid">
+              <article class="compare-card">
+                <p>Standard</p>
+                <strong data-compare-standard>--</strong>
+              </article>
+              <article class="compare-card">
+                <p>Conservative</p>
+                <strong data-compare-conservative>--</strong>
+              </article>
+              <article class="compare-card">
+                <p>Product fit</p>
+                <strong data-compare-product>--</strong>
+              </article>
+            </div>
+          </div>
+          <div class="buy-box" id="next-step">
+            <div class="section-heading section-heading--compact">
+              <p class="eyebrow">Next Step</p>
+              <h3 data-product-heading>Match the result to the right resin class</h3>
+            </div>
+            <p data-product-copy>Use the estimate to narrow the resin class first. Then confirm product limits, cure behavior, and measurement assumptions before you make a buying decision.</p>
+            <div class="button-row">
+              <a class="button" href="/deep-pour-vs-table-top-epoxy/">Compare Resin Types</a>
+              <a class="button button--ghost" href="/methodology/">See Methodology</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sticky-summary" data-sticky-summary>
+        <div>
+          <p class="sticky-summary__label">Current recommendation</p>
+          <strong data-sticky-primary>--</strong>
+        </div>
+        <a class="button button--small" href="#next-step">See next step</a>
+      </div>
+    </section>
+  `;
+}
+
+function renderInfoSections(page) {
+  return page.sections.map((section) => `
+    <section class="section">
+      <div class="section-heading">
+        <h2>${escapeHtml(section.title)}</h2>
+      </div>
+      ${section.body ? `<p class="lead">${escapeHtml(section.body)}</p>` : ""}
+      ${section.points ? `
+        <ul class="bullet-list">
+          ${section.points.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}
+        </ul>
+      ` : ""}
+      ${section.cards ? renderCards(section.cards) : ""}
+      ${section.faqs ? renderFaqs(section.faqs) : ""}
+      ${section.contactEmail ? `<p><a class="text-link" href="mailto:${escapeHtml(section.contactEmail)}">${escapeHtml(section.contactEmail)}</a></p>` : ""}
+    </section>
+  `).join("");
+}
+
+function breadcrumb(page) {
+  const current = page.pageType === "guide" ? "Guides" : page.pageType === "calculator" ? "Calculators" : "Site";
+  return `
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span>/</span>
+      <span>${escapeHtml(current)}</span>
+      ${page.slug ? `<span>/</span><span aria-current="page">${escapeHtml(page.h1)}</span>` : ""}
+    </nav>
+  `;
+}
+
+function jsonLd(page, { site, urlForPath }) {
+  const graph = [];
+  const currentUrl = urlForPath(page.slug);
+
+  graph.push({
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: page.h1,
+    description: page.description,
+    url: currentUrl,
+    isPartOf: {
+      "@type": "WebSite",
+      name: site.name,
+      url: site.origin + "/"
+    }
+  });
+
+  graph.push({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: site.origin + "/" },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: page.pageType === "guide" ? "Guides" : page.pageType === "calculator" ? "Calculators" : "Site",
+        item: currentUrl
+      }
+    ]
+  });
+
+  if (page.pageType === "guide") {
+    graph.push({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: page.h1,
+      description: page.description,
+      author: {
+        "@type": "Organization",
+        name: site.name
+      },
+      publisher: {
+        "@type": "Organization",
+        name: site.name
+      },
+      mainEntityOfPage: currentUrl
+    });
+  }
+
+  if (page.slug === "") {
+    graph.push({
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: site.name,
+      alternateName: site.shortName,
+      url: site.origin + "/",
+      description: site.description
+    });
+  }
+
+  if (page.faq?.length) {
+    graph.push({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: page.faq.map((item) => ({
+        "@type": "Question",
+        name: item.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.a
+        }
+      }))
+    });
+  }
+
+  return graph.map((item) => `<script type="application/ld+json">${JSON.stringify(item)}</script>`).join("\n");
+}
+
+function renderPageBody(page, context) {
+  const { pageMap } = context;
+
+  if (page.pageType === "calculator") {
+    return [
+      renderHero(page),
+      renderBullets("Why this page exists", page.bullets),
+      renderCalculator(page),
+      renderBullets("How to measure or set the inputs", page.howTo),
+      renderBullets("Common mistakes that cost money", page.mistakes),
+      renderBullets("Project checklist before you buy", page.checklist),
+      renderFaqs(page.faq),
+      renderRelated(page, pageMap)
+    ].join("");
+  }
+
+  if (page.pageType === "guide") {
+    return `
+      ${renderHero(page)}
+      <section class="section answer-section">
+        <div class="answer-grid">
+          <article class="answer-card answer-card--lead">
+            <p class="eyebrow">Direct Answer</p>
+            <h2>Start with the shortest correct answer</h2>
+            <p class="lead">${escapeHtml(page.answer)}</p>
+          </article>
+          <article class="answer-card">
+            <p class="eyebrow">Takeaways</p>
+            <ul class="bullet-list">
+              ${(page.takeaways || []).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
+          </article>
+        </div>
+      </section>
+      ${renderGuideSections(page.sections)}
+      ${renderFaqs(page.faq)}
+      ${renderRelated(page, pageMap)}
+    `;
+  }
+
+  return `
+    ${renderHero(page)}
+    ${renderInfoSections(page)}
+    ${renderRelated(page, pageMap)}
+  `;
+}
+
+function renderHeader(site) {
+  return `
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="brand" href="/">
+          <span class="brand__mark">EP</span>
+          <span class="brand__copy">
+            <strong>${escapeHtml(site.shortName)}</strong>
+            <small>Precision resin planning</small>
+          </span>
+        </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
+          <span>Menu</span>
+        </button>
+        <nav class="site-nav" id="site-nav" data-nav>
+          ${site.nav.map((item) => `<a href="${hrefFor(item.slug)}">${escapeHtml(item.label)}</a>`).join("")}
+        </nav>
+      </div>
+    </header>
+  `;
+}
+
+function renderFooter(site) {
+  return `
+    <footer class="site-footer">
+      <div class="site-footer__grid">
+        <div>
+          <strong>${escapeHtml(site.name)}</strong>
+          <p>A calculator-led planning site for resin projects that need more than a rough number.</p>
+        </div>
+        <nav class="footer-links">
+          ${site.footerNav.map((item) => `<a href="${hrefFor(item.slug)}">${escapeHtml(item.label)}</a>`).join("")}
+        </nav>
+      </div>
+    </footer>
+  `;
+}
+
+export function renderPage(page, context) {
+  const { site, urlForPath } = context;
+  const canonical = urlForPath(page.slug);
+  const pageTitle = `${page.title} | ${site.shortName}`;
+  const pageBody = renderPageBody(page, context);
+  const calculatorScript = page.pageType === "calculator" ? `<script type="module" src="/assets/calculator.js"></script>` : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(pageTitle)}</title>
+    <meta name="description" content="${escapeHtml(page.description)}" />
+    <meta property="og:title" content="${escapeHtml(page.title)}" />
+    <meta property="og:description" content="${escapeHtml(page.description)}" />
+    <meta property="og:type" content="${page.pageType === "guide" ? "article" : "website"}" />
+    <meta property="og:url" content="${escapeHtml(canonical)}" />
+    <link rel="canonical" href="${escapeHtml(canonical)}" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/assets/site.css" />
+    ${jsonLd(page, context)}
+  </head>
+  <body data-page-type="${escapeHtml(page.pageType)}" data-page-slug="${escapeHtml(page.slug)}">
+    ${renderHeader(site)}
+    <main class="page-shell">
+      ${breadcrumb(page)}
+      ${pageBody}
+    </main>
+    ${renderFooter(site)}
+    <script type="module" src="/assets/site.js"></script>
+    ${calculatorScript}
+  </body>
+</html>`;
+}
+
+export function renderRobots(site) {
+  return `User-agent: *
+Allow: /
+
+Sitemap: ${site.origin}/sitemap-index.xml
+`;
+}
+
+export function renderSitemapSection(pages, site) {
+  const urls = pages
+    .map((page) => {
+      const href = page.slug ? `${site.origin}/${page.slug}/` : `${site.origin}/`;
+      return `<url><loc>${href}</loc></url>`;
+    })
+    .join("");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`;
+}
+
+export function renderSitemapIndex(urls) {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((url) => `  <sitemap><loc>${url}</loc></sitemap>`).join("\n")}
+</sitemapindex>`;
+}
