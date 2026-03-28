@@ -920,8 +920,10 @@ function resetPanel(shell) {
   if (section) {
     const stickyPrimary = section.querySelector("[data-sticky-primary]");
     if (stickyPrimary) stickyPrimary.textContent = "--";
-    const stickyCost = section.querySelector("[data-sticky-cost]");
-    if (stickyCost) stickyCost.textContent = "";
+    const stickyCostEl = section.querySelector("[data-sticky-cost]");
+    const stickyCostVal = section.querySelector("[data-sticky-cost-value]");
+    if (stickyCostVal) stickyCostVal.textContent = "";
+    if (stickyCostEl) stickyCostEl.style.display = "none";
   }
 }
 
@@ -951,8 +953,10 @@ function updatePanel(form, result) {
   if (section) {
     const stickyPrimary = section.querySelector("[data-sticky-primary]");
     if (stickyPrimary) stickyPrimary.textContent = result.primary;
-    const stickyCost = section.querySelector("[data-sticky-cost]");
-    if (stickyCost) stickyCost.textContent = result.costText;
+    const stickyCostEl2 = section.querySelector("[data-sticky-cost]");
+    const stickyCostVal2 = section.querySelector("[data-sticky-cost-value]");
+    if (stickyCostVal2) stickyCostVal2.textContent = result.costText;
+    if (stickyCostEl2) stickyCostEl2.style.display = result.costText ? "flex" : "none";
   }
 
   const breakdown = shell.querySelector("[data-breakdown-list]");
@@ -1044,5 +1048,31 @@ function initCalculator(form) {
 document.querySelectorAll(".calculator-root").forEach((form) => {
   if (form instanceof HTMLFormElement) {
     initCalculator(form);
+  }
+});
+
+/* ---- Pill Toggle interaction ---- */
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest(".pill-toggle__btn");
+  if (!btn) return;
+
+  const toggle = btn.closest("[data-pill-toggle]");
+  if (!toggle) return;
+
+  const hiddenInput = toggle.querySelector('input[type="hidden"]');
+  if (!hiddenInput) return;
+
+  // Update active state
+  toggle.querySelectorAll(".pill-toggle__btn").forEach((b) => b.classList.remove("is-active"));
+  btn.classList.add("is-active");
+
+  // Update value
+  hiddenInput.value = btn.dataset.value;
+
+  // Trigger change on the form so existing logic picks it up
+  const form = hiddenInput.closest("form");
+  if (form) {
+    hiddenInput.dispatchEvent(new Event("change", { bubbles: true }));
+    hiddenInput.dispatchEvent(new Event("input", { bubbles: true }));
   }
 });

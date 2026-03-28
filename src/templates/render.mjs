@@ -194,13 +194,31 @@ function hrefFor(slug) {
 }
 
 function shapeSelect(label, name, options) {
+  if (options.length <= 3) {
+    const buttons = options
+      .map(([value, text], i) =>
+        `<button type="button" class="pill-toggle__btn${i === 0 ? " is-active" : ""}" data-value="${escapeHtml(value)}">${escapeHtml(text)}</button>`
+      )
+      .join("");
+    return `
+      <div class="field">
+        <span>${escapeHtml(label)}</span>
+        <div class="pill-toggle" data-pill-toggle data-pill-name="${escapeHtml(name)}">
+          <input type="hidden" name="${escapeHtml(name)}" value="${escapeHtml(options[0][0])}" />
+          ${buttons}
+        </div>
+      </div>
+    `;
+  }
+
+  const opts = options
+    .map(([value, text]) => `<option value="${escapeHtml(value)}">${escapeHtml(text)}</option>`)
+    .join("");
   return `
     <label class="field">
       <span>${escapeHtml(label)}</span>
-      <select name="${escapeHtml(name)}">
-        ${options
-          .map(([value, text]) => `<option value="${escapeHtml(value)}">${escapeHtml(text)}</option>`)
-          .join("")}
+      <select class="custom-select" name="${escapeHtml(name)}">
+        ${opts}
       </select>
     </label>
   `;
@@ -283,9 +301,13 @@ function renderCards(cards = []) {
           const icon = card.icon ? `<span class="hero-action__icon">${card.icon}</span>` : "";
           return `
             <article class="mini-card${primaryClass}">
-              <h3>${icon}${escapeHtml(card.title)}</h3>
-              <p>${escapeHtml(card.text)}</p>
-              ${card.slug ? `<a class="text-link" href="${href}">Open page</a>` : ""}
+              <div class="mini-card__header">
+                <h3>${icon}${escapeHtml(card.title)}</h3>
+              </div>
+              <div class="mini-card__body">
+                <p>${escapeHtml(card.text)}</p>
+                ${card.slug ? `<a class="text-link" href="${href}">Open page</a>` : ""}
+              </div>
             </article>
           `;
         })
@@ -312,9 +334,13 @@ function renderRelated(page, pageMap) {
           .map(
             (relatedPage) => `
             <article class="mini-card">
-              <h3>${escapeHtml(relatedPage.h1)}</h3>
-              <p>${escapeHtml(relatedPage.description)}</p>
-              <a class="text-link" href="${hrefFor(relatedPage.slug)}">Visit ${escapeHtml(relatedPage.h1)}</a>
+              <div class="mini-card__header">
+                <h3>${escapeHtml(relatedPage.h1)}</h3>
+              </div>
+              <div class="mini-card__body">
+                <p>${escapeHtml(relatedPage.description)}</p>
+                <a class="text-link" href="${hrefFor(relatedPage.slug)}">Open page</a>
+              </div>
             </article>
           `
           )
@@ -472,7 +498,7 @@ function renderCalculator(page) {
           <p class="sticky-summary__label">Current recommendation</p>
           <strong data-sticky-primary>--</strong>
         </div>
-        <p class="sticky-summary__cost" data-sticky-cost></p>
+        <p class="sticky-summary__cost" data-sticky-cost><span class="sticky-summary__cost-label">Est. cost</span><strong data-sticky-cost-value></strong></p>
         <a class="button button--small" href="#result-panel">View details</a>
       </div>
     </section>
@@ -647,7 +673,12 @@ function renderHeader(site) {
           </span>
         </a>
         <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
-          <span>Menu</span>
+          <span class="nav-toggle__icon">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+          <span class="nav-toggle__text">Menu</span>
         </button>
         <nav class="site-nav" id="site-nav" data-nav>
           ${site.nav.map((item) => `<a href="${hrefFor(item.slug)}">${escapeHtml(item.label)}</a>`).join("")}
@@ -661,15 +692,169 @@ function renderFooter(site) {
   return `
     <footer class="site-footer">
       <div class="site-footer__grid">
-        <div>
-          <strong>${escapeHtml(site.name)}</strong>
-          <p>A calculator-led planning site for resin projects that need more than a rough number.</p>
+        <div class="site-footer__top">
+          <a class="footer-brand" href="/">
+            <span class="footer-brand__mark"><svg viewBox="0 0 64 64" width="22" height="22" aria-hidden="true"><defs><linearGradient id="fm" x1="0" y1="0" x2=".5" y2="1"><stop offset="0%" stop-color="#2d6e8a"/><stop offset="100%" stop-color="#1a3d4d"/></linearGradient></defs><polygon points="32,2 58,17 58,47 32,62 6,47 6,17" fill="url(#fm)"/><path d="M32,16 Q41,30 41,38 A9,9 0 1,1 23,38 Q23,30 32,16Z" fill="rgba(255,255,255,.92)"/></svg></span>
+            <span class="footer-brand__copy">
+              <strong>${escapeHtml(site.shortName)}</strong>
+              <small>Precision resin planning</small>
+            </span>
+          </a>
+          <nav class="footer-links">
+            ${site.footerNav.map((item) => `<a href="${hrefFor(item.slug)}">${escapeHtml(item.label)}</a>`).join("")}
+          </nav>
         </div>
-        <nav class="footer-links">
-          ${site.footerNav.map((item) => `<a href="${hrefFor(item.slug)}">${escapeHtml(item.label)}</a>`).join("")}
-        </nav>
+        <div class="site-footer__bottom">
+          <p class="footer-copy">&copy; ${new Date().getFullYear()} ${escapeHtml(site.name)}. All rights reserved.</p>
+          <nav class="footer-legal">
+            <a href="/privacy/">Privacy</a>
+            <a href="/terms/">Terms</a>
+            <button type="button" class="footer-legal__button" data-cookie-open>Cookies</button>
+          </nav>
+        </div>
       </div>
     </footer>
+  `;
+}
+
+function renderConsentBootstrap() {
+  return `
+    <script>
+      (function () {
+        var key = "epoxy_consent_v1";
+        var defaultState = {
+          version: 1,
+          decision: "unknown",
+          analytics_storage: "denied",
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+          updatedAt: ""
+        };
+
+        function normalizeConsent(input) {
+          var state = Object.assign({}, defaultState, input || {});
+          var valid = { granted: true, denied: true };
+
+          if (!valid[state.analytics_storage]) state.analytics_storage = "denied";
+          if (!valid[state.ad_storage]) state.ad_storage = "denied";
+          if (!valid[state.ad_user_data]) state.ad_user_data = state.ad_storage;
+          if (!valid[state.ad_personalization]) state.ad_personalization = "denied";
+
+          if (state.ad_personalization === "granted") {
+            state.ad_storage = "granted";
+            state.ad_user_data = "granted";
+          }
+
+          if (state.ad_storage === "denied") {
+            state.ad_user_data = "denied";
+            state.ad_personalization = "denied";
+          }
+
+          return state;
+        }
+
+        var state = defaultState;
+
+        try {
+          var raw = window.localStorage.getItem(key);
+          if (raw) state = normalizeConsent(JSON.parse(raw));
+        } catch (error) {
+          state = defaultState;
+        }
+
+        window.epoxyConsentKey = key;
+        window.epoxyConsentState = state;
+        document.documentElement.dataset.consentDecision = state.decision;
+        document.documentElement.dataset.analyticsStorage = state.analytics_storage;
+        document.documentElement.dataset.adStorage = state.ad_storage;
+      })();
+    </script>
+  `;
+}
+
+function renderConsentUi() {
+  const googleBusinessDataUrl = "https://business.safety.google/privacy/";
+
+  return `
+    <section class="cookie-banner" data-cookie-banner hidden aria-label="Cookie consent">
+      <div class="cookie-banner__surface">
+        <div class="cookie-banner__layout">
+          <div class="cookie-banner__copy">
+            <p class="eyebrow">Privacy Choices</p>
+            <h2>Cookies, local storage, and ads personalization</h2>
+            <p>
+              We use necessary storage to keep the calculator and core site features working. With your permission, we may also use analytics and advertising storage so that Google and other partners can measure traffic, support advertising, and deliver ads personalization.
+            </p>
+            <p class="cookie-banner__meta">
+              Choose <strong>Accept all</strong>, <strong>Reject non-essential</strong>, or manage your preferences.
+              Review our <a href="/privacy/">Privacy Policy</a> and
+              <a href="${googleBusinessDataUrl}" target="_blank" rel="noreferrer">Google Business Data Responsibility</a> page for more detail.
+            </p>
+          </div>
+          <div class="button-row cookie-banner__actions">
+            <button class="button button--ghost" type="button" data-cookie-reject>Reject non-essential</button>
+            <button class="button button--quiet" type="button" data-cookie-manage>Manage choices</button>
+            <button class="button" type="button" data-cookie-accept>Accept all</button>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="cookie-modal" data-cookie-modal hidden>
+      <button class="cookie-modal__backdrop" type="button" aria-label="Close cookie preferences" data-cookie-close></button>
+      <section class="cookie-modal__panel" role="dialog" aria-modal="true" aria-labelledby="cookie-preferences-title" tabindex="-1">
+        <div class="cookie-modal__head">
+          <div>
+            <p class="eyebrow">Cookie Preferences</p>
+            <h2 id="cookie-preferences-title">Choose what this site can store</h2>
+          </div>
+          <button class="cookie-modal__close" type="button" aria-label="Close cookie preferences" data-cookie-close>&times;</button>
+        </div>
+        <p class="cookie-modal__intro">
+          Necessary storage is always on because it keeps the calculator, navigation, and saved privacy choices working. Optional categories apply only after you opt in.
+        </p>
+        <div class="cookie-options">
+          <label class="consent-option consent-option--locked">
+            <span class="consent-option__copy">
+              <strong>Necessary storage</strong>
+              <small>Required for calculator behavior, navigation, and saving your consent settings.</small>
+            </span>
+            <span class="consent-option__status">Always on</span>
+          </label>
+          <label class="consent-option" for="cookie-analytics-storage">
+            <span class="consent-option__copy">
+              <strong>Analytics storage</strong>
+              <small>Allows traffic and performance measurement to understand which pages and calculators help users most.</small>
+            </span>
+            <input id="cookie-analytics-storage" class="consent-option__toggle" type="checkbox" data-cookie-field="analytics_storage" />
+          </label>
+          <label class="consent-option" for="cookie-ad-storage">
+            <span class="consent-option__copy">
+              <strong>Ad storage and measurement</strong>
+              <small>Allows advertising-related storage used by Google or other partners for ad delivery, frequency, and measurement.</small>
+            </span>
+            <input id="cookie-ad-storage" class="consent-option__toggle" type="checkbox" data-cookie-field="ad_storage" />
+          </label>
+          <label class="consent-option" for="cookie-ad-personalization">
+            <span class="consent-option__copy">
+              <strong>Ads personalization</strong>
+              <small>Allows personalized advertising based on your activity, where that use is enabled and legally permitted.</small>
+            </span>
+            <input id="cookie-ad-personalization" class="consent-option__toggle" type="checkbox" data-cookie-field="ad_personalization" />
+          </label>
+        </div>
+        <p class="cookie-modal__disclosure">
+          If optional categories are enabled, third parties including Google may access personal data and device information in line with the choices you make here.
+          See our <a href="/privacy/">Privacy Policy</a> and
+          <a href="${googleBusinessDataUrl}" target="_blank" rel="noreferrer">Google Business Data Responsibility</a> page.
+        </p>
+        <div class="button-row cookie-modal__actions">
+          <button class="button button--ghost" type="button" data-cookie-reject>Reject non-essential</button>
+          <button class="button button--quiet" type="button" data-cookie-save>Save choices</button>
+          <button class="button" type="button" data-cookie-accept>Accept all</button>
+        </div>
+      </section>
+    </div>
   `;
 }
 
@@ -693,10 +878,13 @@ export function renderPage(page, context) {
     <meta property="og:url" content="${escapeHtml(canonical)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/site.css" />
+    ${renderConsentBootstrap()}
     ${jsonLd(page, context)}
   </head>
   <body data-page-type="${escapeHtml(page.pageType)}" data-page-slug="${escapeHtml(page.slug)}">
@@ -706,6 +894,7 @@ export function renderPage(page, context) {
       ${pageBody}
     </main>
     ${renderFooter(site)}
+    ${renderConsentUi()}
     <script type="module" src="/assets/site.js"></script>
     ${calculatorScript}
   </body>

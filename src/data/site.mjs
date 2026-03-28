@@ -1,5 +1,5 @@
-const siteOrigin = process.env.SITE_ORIGIN || "https://epoxyplanner.example";
-const contactEmail = process.env.CONTACT_EMAIL || "hello@epoxyplanner.example";
+const siteOrigin = process.env.SITE_ORIGIN || "https://epoxyplanner.com";
+const contactEmail = process.env.CONTACT_EMAIL || "hello@epoxyplanner.com";
 
 export const site = {
   name: "Epoxy Project Planner",
@@ -229,7 +229,7 @@ export const pages = [
           "This site is designed to be transparent about assumptions. It reports both raw volume and recommendation, keeps the methodology visible, and gives you scenario-specific tools instead of forcing every job through one generic formula.",
         cards: [
           { title: "Methodology", text: "See formulas, conversion constants, and planning assumptions.", slug: "methodology" },
-          { title: "Authors", text: "Understand the editorial standard behind the pages.", slug: "authors" },
+          { title: "Authors", text: "See who builds the calculators and why you can trust the numbers.", slug: "authors" },
           { title: "FAQ", text: "Review common questions before you rely on the estimate.", slug: "faq" }
         ]
       }
@@ -1216,28 +1216,72 @@ export const pages = [
         title: "What makes the site different",
         body:
           "The core pages are organized by project intent rather than by arbitrary keyword variants. River tables, deep pours, coatings, and floor jobs each get their own logic because the underlying task is genuinely different."
+      },
+      {
+        title: "Who the site is for",
+        points: [
+          "Woodworkers planning river tables, void fills, and casting jobs.",
+          "DIY users estimating top coats, countertop pours, and garage floor kits.",
+          "Shops that need fast material and budget estimates before ordering resin."
+        ]
+      },
+      {
+        title: "What the calculators do not replace",
+        body:
+          "Every estimate on this site is intended for planning. Before buying or pouring, users should still verify maximum pour depth, cure schedule, mix ratio, and coverage claims against the manufacturer documentation for the exact product they plan to use."
+      },
+      {
+        title: "Monetization and editorial independence",
+        body:
+          "The site is designed to remain useful even when no advertising or commercial placement is shown. Rankings, formulas, and recommendations are not sold placement. If monetization is introduced later, it should not change the calculator logic or hide the methodology behind promotional content."
       }
     ]
   }),
   infoPage({
     slug: "authors",
-    title: "Authors and Editorial Standards",
-    h1: "Authors and Editorial Standards",
+    title: "Why You Can Trust These Calculators | Epoxy Project Planner",
+    h1: "Why You Can Trust These Calculators",
     description:
-      "See who maintains the epoxy planning site and how formulas, comparisons, and guide content are reviewed and updated.",
-    eyebrow: "Editorial Standards",
+      "Learn who builds and maintains Epoxy Project Planner, why the formulas work, and how to report an issue if a result looks wrong.",
+    eyebrow: "Trust & Accuracy",
     intro:
-      "This site should not read like anonymous affiliate filler. The editorial standard is that every page must help the reader make a better project decision than a generic formula alone would allow.",
+      "You are about to buy resin based on a number from the internet. Fair to ask: why should you trust it? This page explains who is behind the math, how the formulas are validated, and what to do if something looks off.",
     sections: [
       {
-        title: "Authoring approach",
+        title: "Who builds this site",
         body:
-          "Pages are written and maintained around real user tasks: estimating, measuring, comparing resin types, budgeting, and converting units. Each page is tied to a defined search intent and a practical use case."
+          "Epoxy Project Planner is built and maintained by a small team focused exclusively on resin quantity planning. We do not sell epoxy. We do not take commissions from resin brands. The only goal is to give you a number you can actually buy against without wasting money or running short mid-pour."
       },
       {
-        title: "Update policy",
+        title: "How the formulas are validated",
+        points: [
+          "Every calculator is built on published geometric formulas and unit conversion constants — not guesswork or marketing claims.",
+          "Waste buffers, seepage estimates, and layer guidance come from documented project patterns, not arbitrary percentages.",
+          "The methodology page shows every formula and assumption so you can verify the math yourself before you spend money.",
+          "When a user reports a result that does not match real-world outcomes, we investigate and update the formula or assumptions."
+        ]
+      },
+      {
+        title: "What makes this different from a generic calculator",
+        points: [
+          "Most epoxy calculators give you raw volume and stop. That number is always too low for a real project.",
+          "This site adds waste, seepage, seal-coat, mixing loss, and layer guidance — the things that actually determine how much resin you need to order.",
+          "Each calculator is tuned for a specific project type. A river table and a garage floor do not share the same measurement logic, so they should not share the same calculator."
+        ]
+      },
+      {
+        title: "What we show and what we do not",
+        points: [
+          "We show raw volume and recommended order quantity side by side so you can see exactly where the extra material comes from.",
+          "We do not hide assumptions. Waste percentage, seepage buffer, and seal-coat allowance are all visible and adjustable.",
+          "We do not recommend specific resin brands. The calculators help you figure out how much to buy — the product choice is yours."
+        ]
+      },
+      {
+        title: "Found a problem? Tell us",
         body:
-          "The site reviews formula logic, conversion constants, and product-type guidance whenever the core methodology changes or when user feedback reveals a blind spot in a scenario page."
+          "If a calculator gives you a result that does not match your real project, we want to know. Send the page URL, your measurements, and what you expected through the contact page. Accuracy fixes always take priority over new features.",
+        contactEmail
       }
     ]
   }),
@@ -1259,8 +1303,127 @@ export const pages = [
       },
       {
         title: "What feedback is most useful",
+        points: [
+          "The exact page URL you were using.",
+          "The project type and measurements you entered.",
+          "The result you expected and why the current output looks wrong.",
+          "Any manufacturer limit or product sheet that conflicts with the page guidance."
+        ]
+      },
+      {
+        title: "What this inbox can and cannot do",
         body:
-          "The most valuable reports include the page URL, the project type you were estimating, your expected result, and why the page felt wrong or incomplete."
+          "This contact path is intended for site feedback and accuracy issues. It is not a guarantee of project-specific engineering advice, product support for third-party resin brands, or emergency troubleshooting during a live pour."
+      },
+      {
+        title: "Response scope",
+        body:
+          "The site may review messages for corrections, future feature ideas, and content gaps. Submission of feedback does not create a consulting relationship, but well-documented reports are valuable input for improving the calculators."
+      }
+    ]
+  }),
+  infoPage({
+    slug: "privacy",
+    title: "Privacy Policy",
+    h1: "Privacy Policy",
+    description:
+      "Read how Epoxy Project Planner handles contact messages, analytics, cookies, and advertising-related disclosures.",
+    eyebrow: "Privacy",
+    intro:
+      "This privacy policy explains what information the site may receive, how it may be used, and what advertising and consent-related disclosures apply if third-party services are enabled.",
+    sections: [
+      {
+        title: "Information the site may receive",
+        points: [
+          "Information you choose to send by email, such as your name, email address, and message contents.",
+          "Basic technical and server data that may be logged by the hosting provider, such as IP address, browser type, referrer, and request time.",
+          "Usage and performance information collected through analytics or similar tooling if those services are enabled."
+        ]
+      },
+      {
+        title: "How information may be used",
+        points: [
+          "To respond to feedback, correction requests, and support inquiries sent to the contact address.",
+          "To maintain site security, diagnose errors, and improve calculator accuracy and page performance.",
+          "To understand which calculators and guides are most useful so future updates focus on real user needs."
+        ]
+      },
+      {
+        title: "Cookies, local storage, analytics, and ads",
+        body:
+          "The site may use cookies or similar storage for essential functionality, analytics, and advertising if those services are activated. If Google services such as AdSense are enabled, Google and its partners may use cookies or local storage to serve and measure ads. Where required by law, the site will provide a consent mechanism before enabling non-essential storage or personalized advertising."
+      },
+      {
+        title: "Third-party services",
+        body:
+          "Hosting, analytics, search, advertising, and embedded third-party services may process limited technical data in order to deliver the site. Each third-party provider operates under its own terms and privacy practices, so users should review those providers directly when relevant."
+      },
+      {
+        title: "Google advertising disclosures",
+        body:
+          "If Google AdSense or related Google advertising services are enabled on the site, Google and participating advertising technology providers may access device information, cookies, local storage, IP address, and related usage data in accordance with the consent choices made by the user and the policies that apply in the user's region."
+      },
+      {
+        title: "Data retention and your choices",
+        body:
+          "Contact emails and operational logs may be retained for as long as reasonably necessary to answer messages, troubleshoot issues, comply with legal obligations, and maintain the service. You can request privacy-related help or ask a question about your data by writing to the contact address below.",
+        contactEmail
+      },
+      {
+        title: "Policy updates",
+        body:
+          "This policy may be updated as the site adds new features, analytics, or monetization tools. Material changes should be reflected on this page before or when the change goes live."
+      }
+    ]
+  }),
+  infoPage({
+    slug: "terms",
+    title: "Terms of Use",
+    h1: "Terms of Use",
+    description:
+      "Read the terms for using Epoxy Project Planner, including planning-only use, user responsibilities, and liability limitations.",
+    eyebrow: "Terms",
+    intro:
+      "By using this site, you agree to use the calculators and guides as planning tools only and to independently verify product-specific requirements before buying or pouring epoxy.",
+    sections: [
+      {
+        title: "Planning-only information",
+        body:
+          "The calculators, guides, charts, and examples on this site are provided for general informational and planning purposes. They are not a substitute for manufacturer data sheets, jobsite testing, engineering review, or professional advice tailored to a specific project."
+      },
+      {
+        title: "Your responsibilities",
+        points: [
+          "Confirm dimensions, waste assumptions, and measurement inputs before relying on any estimate.",
+          "Verify maximum pour depth, cure schedule, mix ratio, working time, and coverage claims against the product you intend to use.",
+          "Use safe handling practices and follow all manufacturer instructions, warnings, and local regulations."
+        ]
+      },
+      {
+        title: "No warranty",
+        body:
+          "The site is provided on an as-is basis without warranties of accuracy, completeness, merchantability, fitness for a particular purpose, or uninterrupted availability. Epoxy projects are highly sensitive to material choice, temperature, substrate condition, and execution quality, so final outcomes remain the user's responsibility."
+      },
+      {
+        title: "Limitation of liability",
+        body:
+          "To the fullest extent permitted by law, the site and its operators are not liable for losses, damages, project failures, purchasing decisions, or other consequences arising from the use of the site or reliance on its estimates."
+      },
+      {
+        title: "Acceptable use and intellectual property",
+        body:
+          "You may use the site for personal or business planning. You may not misuse the service, interfere with the site, attempt unauthorized access, or copy site content in a way that violates applicable law or the rights of the site operator."
+      },
+      {
+        title: "Third-party links and services",
+        body:
+          "The site may reference or link to third-party products, documentation, or services. Those third parties control their own content, pricing, policies, and availability, and the site is not responsible for them."
+      },
+      {
+        title: "Contact",
+        body:
+          "Questions about these terms can be sent to the contact address below.",
+        contactEmail
       }
     ]
   }),
