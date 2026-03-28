@@ -477,124 +477,157 @@ export const pages = [
   }),
   calculatorPage({
     slug: "table-top-epoxy-calculator",
-    title: "Table Top Epoxy Calculator for Coats & Pours",
+    title: "Table Top Epoxy Calculator: Flood Coat Coverage & Resin",
     h1: "Table Top Epoxy Calculator",
     description:
-      "Estimate epoxy for tabletops and surface coats with coverage, thickness, waste, and top-coat recommendations.",
+      "Estimate epoxy for tabletops and flood coats with surface coverage, finish thickness, runoff, waste, and top-coat resin guidance.",
     eyebrow: "Surface Finish Calculator",
     intro:
-      "Use this page for table top resin work where clarity, smooth leveling, and finished coat thickness matter more than deep casting behavior.",
+      "Use this page for table top resin work where the job is really about coverage, leveling, clarity, and finish build. It is tuned for flood coats and finish pours, not thick casting sections or cavity fills.",
     primaryKeyword: "table top epoxy calculator",
     supportingKeywords: ["tabletop epoxy calculator", "epoxy table top calculator"],
     calculatorType: "surface",
     bullets: [
-      "Coverage-oriented planning for tabletop coats.",
-      "Useful for flood coats and refined finish pours.",
-      "Moves quickly from surface size to purchase recommendation."
+      "Best for flood coats, finishing pours, and tabletop resurfacing jobs.",
+      "Translates surface size and target thickness into a usable resin order estimate.",
+      "Keeps edge runoff, perimeter waste, and top-coat product fit visible in the calculation."
     ],
     howTo: [
-      "Measure the entire coated area, including any edges you plan to cover.",
-      "Set the finish thickness conservatively if you are chasing a glass coat.",
-      "Increase waste if you expect heavy edge runoff."
+      "Measure every face that will actually receive resin, including wrap edges if they will be coated.",
+      "Enter the finished flood-coat thickness you want after leveling, not the full substrate thickness.",
+      "Use a higher waste setting if you expect strong edge runoff or if the piece has uneven perimeter detail."
     ],
     mistakes: [
-      "Using deep-pour thinking for a thin finish coat.",
-      "Not budgeting for perimeter runoff.",
-      "Choosing the wrong page for a thick river channel."
+      "Using deep-pour logic for a thin finish job.",
+      "Ignoring edge runoff and then under-ordering material.",
+      "Using a tabletop page for a river channel or thick embedded pour."
     ],
     faq: [
       {
         q: "Is table top epoxy the same as deep pour resin?",
         a: "No. Table top products are typically for thin finish layers, while deep pour products are formulated for thicker pours."
+      },
+      {
+        q: "Should I count table edges in the estimate?",
+        a: "Yes, if the edges will actually receive resin. Table edges and runoff are often the reason a flood-coat estimate comes in short."
+      },
+      {
+        q: "What if the table has a small knot or recessed area?",
+        a: "Use this page for the main surface coat, then add a separate void-fill or volume estimate if the recess is deep enough to behave like a cavity rather than a finish layer."
       }
     ],
     related: [
       "epoxy-coverage-calculator",
       "bar-top-epoxy-calculator",
       "countertop-epoxy-calculator",
+      "epoxy-cost-calculator",
       "deep-pour-vs-table-top-epoxy"
     ],
-    compareLabel: "Finish coat baseline vs buffered order"
+    note: "Use this page for flood coats and finish pours. If the job includes a thick recess, river channel, or casting depth limit, solve that part on a different calculator first.",
+    compareLabel: "Flood-coat baseline vs buffered order",
+    resultEyebrow: "Coverage recommendation"
   }),
   calculatorPage({
     slug: "bar-top-epoxy-calculator",
-    title: "Bar Top Epoxy Calculator for Resin Coats",
+    title: "Bar Top Epoxy Calculator: Coverage, Edges & Resin",
     h1: "Bar Top Epoxy Calculator",
     description:
-      "Calculate epoxy for bar tops with surface coverage, waste, edge soak-in, and finish-coat guidance for high-gloss pours.",
+      "Calculate epoxy for bar tops with surface coverage, exposed-edge runoff, waste, and finish-coat guidance for high-gloss pours.",
     eyebrow: "Bar Top Coverage",
     intro:
-      "Bar tops often combine long surface runs with visible edges and drips. This page is tuned for that coverage pattern rather than generic volume-only math.",
+      "Bar tops often combine long surface runs, visible front edges, and more drip loss than a standard tabletop. This page is tuned for that coverage pattern so the estimate reflects the realities of a glossy bar finish instead of generic volume math.",
     primaryKeyword: "bar top epoxy calculator",
     supportingKeywords: ["bar countertop epoxy calculator"],
     calculatorType: "surface",
     bullets: [
-      "Coverage-first planning for bars and serving counters.",
-      "Better for finish pours than cavity-only volume math.",
-      "Useful when edges, drips, and perimeter waste matter."
+      "Built for bars, serving counters, and long surface runs with exposed edges.",
+      "More accurate for bar-top finish pours than cavity-style volume estimation.",
+      "Makes edge treatment, runoff, and waste visible before you choose a resin quantity."
     ],
     howTo: [
-      "Measure total top area first, then decide whether the edges need their own buffer.",
-      "Use a slightly higher waste setting if the bar has many exposed edges.",
-      "Treat this as a coating job unless the project includes a deep inset."
+      "Measure the full top surface first, then add edge exposure into the waste assumption if the bar has a pronounced front edge or wrap.",
+      "Use a slightly higher waste setting than a flat tabletop if the finish will run heavily over the perimeter.",
+      "Treat this as a coating job unless the project includes a true cavity, inlay pocket, or deep inset."
     ],
     mistakes: [
-      "Ignoring the exposed edge area on a thick bar top.",
-      "Treating a flood coat like a full cavity pour.",
-      "Not accounting for waste from long drip lines."
+      "Ignoring the exposed front edge on a thick bar top.",
+      "Treating a glossy finish coat like a deep cavity fill.",
+      "Underestimating waste on long drip lines and perimeter cleanup."
     ],
     faq: [
       {
         q: "Should bar tops use the same thickness as countertop pours?",
         a: "Sometimes, but the desired visual effect and edge style can change the ideal finish thickness."
+      },
+      {
+        q: "Why do bar tops usually need more buffer than a flat desk top?",
+        a: "Because bars often have longer exposed edges, more visible drips, and more finish loss along the perimeter. The geometry is still surface-first, but the waste pattern is usually less forgiving."
+      },
+      {
+        q: "Is this page right for an embedded object bar top?",
+        a: "Use this page for the final flood coat. If the embedded object section creates a true cavity or depth pocket, calculate that volume separately before you estimate the finish layer."
       }
     ],
     related: [
       "table-top-epoxy-calculator",
       "countertop-epoxy-calculator",
-      "epoxy-coverage-calculator"
+      "epoxy-coverage-calculator",
+      "epoxy-cost-calculator"
     ],
-    compareLabel: "Straight coverage vs edge-heavy coverage"
+    note: "Bar tops often lose more resin at the perimeter than users expect. Use a conservative waste setting if the project has a thick front edge, rounded profile, or heavy runoff.",
+    compareLabel: "Top-only vs edge-heavy bar finish",
+    resultEyebrow: "Coverage recommendation"
   }),
   calculatorPage({
     slug: "countertop-epoxy-calculator",
-    title: "Countertop Epoxy Calculator for Resin Coverage",
+    title: "Countertop Epoxy Calculator: Coverage, Edges & Resin",
     h1: "Countertop Epoxy Calculator",
     description:
-      "Use this countertop epoxy calculator to estimate coverage, waste, thickness, and resin quantity for kitchen and surface projects.",
+      "Use this countertop epoxy calculator to estimate coverage, finish thickness, waste, and resin quantity for kitchen, island, vanity, and other surface projects.",
     eyebrow: "Countertop Planning",
     intro:
-      "Countertop projects are usually about surface area, edges, and finish thickness. This page keeps the math focused on those realities rather than treating the job like a simple block volume.",
+      "Countertop projects are usually surface-first, but they become expensive when edges, waterfall faces, seams, and finish thickness are handled loosely. This page keeps the math focused on those realities rather than pretending the job is a simple block of volume.",
     primaryKeyword: "countertop epoxy calculator",
     supportingKeywords: ["epoxy countertop calculator", "counter top epoxy calculator"],
     calculatorType: "surface",
     bullets: [
-      "Coverage planning for kitchens, islands, and vanity tops.",
-      "Built around finish thickness and practical waste.",
-      "Easy handoff to cost planning and product type guidance."
+      "Built for kitchen counters, islands, vanity tops, and other flat surface refinishing work.",
+      "Uses finish thickness and practical waste instead of cavity-depth assumptions.",
+      "Makes it easier to decide whether the layout is simple enough for one coating estimate or needs extra edge and seam buffer."
     ],
     howTo: [
-      "Measure the full countertop footprint and note any waterfall edges or drop edges.",
-      "Use the finish thickness you actually want to see once the coat levels out.",
-      "Increase waste when the layout has many seams or edge details."
+      "Measure the full footprint and note any waterfall faces, drop edges, returns, or wrapped sections that will also receive epoxy.",
+      "Enter the finished build thickness you want to see after leveling, not the thickness of the substrate itself.",
+      "Increase waste when the countertop layout includes many seams, edge details, or multiple disconnected sections."
     ],
     mistakes: [
-      "Ignoring splash edges and wrap-around faces.",
-      "Using one material estimate for different finish passes.",
-      "Using a cavity-based calculator for a coating project."
+      "Ignoring waterfall faces, splash edges, or wrapped returns.",
+      "Trying to use one estimate for multiple separate finish passes without buffer.",
+      "Using a volume or cavity page for what is fundamentally a surface-coating job."
     ],
     faq: [
       {
         q: "Can I use this page for kitchen islands and vanity tops?",
         a: "Yes. It works for flat surface coating projects where the main drivers are area, edges, and finish thickness."
+      },
+      {
+        q: "Should I include backsplashes and waterfall ends?",
+        a: "Include them if they will actually be coated. On many kitchen and island projects, those vertical faces are a material cost people forget to count."
+      },
+      {
+        q: "What if I am doing multiple countertop sections at once?",
+        a: "Measure the total coated area across all sections, then raise the waste buffer if the work will be split across multiple pours, edges, or disconnected shapes."
       }
     ],
     related: [
       "epoxy-coverage-calculator",
       "table-top-epoxy-calculator",
-      "bar-top-epoxy-calculator"
+      "bar-top-epoxy-calculator",
+      "epoxy-cost-calculator"
     ],
-    compareLabel: "Surface-only vs edge-inclusive plan"
+    note: "Countertop jobs often become edge-heavy faster than expected. If the project includes waterfall faces, wrapped returns, or multiple sections, use a more conservative buffer.",
+    compareLabel: "Surface-only vs edge-inclusive plan",
+    resultEyebrow: "Coverage recommendation"
   }),
   calculatorPage({
     slug: "garage-floor-epoxy-calculator",
