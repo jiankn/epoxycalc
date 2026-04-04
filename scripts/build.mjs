@@ -104,6 +104,10 @@ async function main() {
   buildSitemaps({ site, pages, renderSitemapIndex, renderSitemapSection });
   writeFile(path.join(distRoot, "robots.txt"), renderRobots(site));
   writeFile(path.join(distRoot, ".nojekyll"), "");
+
+  // Cloudflare Pages _redirects: force www → non-www (301)
+  const redirectsContent = `https://www.epoxyplanner.com/* https://epoxyplanner.com/:splat 301\n`;
+  writeFile(path.join(distRoot, "_redirects"), redirectsContent);
   console.log(`Built ${pages.length} pages into ${distRoot}`);
 }
 
