@@ -542,6 +542,15 @@ function jsonLd(page, { site, urlForPath }) {
 
   graph.push({
     "@context": "https://schema.org",
+    "@type": "Organization",
+    name: site.name,
+    alternateName: site.shortName,
+    url: site.origin + "/",
+    logo: site.origin + "/assets/apple-touch-icon.png"
+  });
+
+  graph.push({
+    "@context": "https://schema.org",
     "@type": "WebPage",
     name: page.h1,
     description: page.description,
@@ -592,7 +601,15 @@ function jsonLd(page, { site, urlForPath }) {
       name: site.name,
       alternateName: site.shortName,
       url: site.origin + "/",
-      description: site.description
+      description: site.description,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: site.origin + "/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
     });
   }
 
@@ -866,19 +883,32 @@ export function renderPage(page, context) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="${escapeHtml(site.name)}" />
+    ${page.primaryKeyword ? `<meta name="keywords" content="${escapeHtml([page.primaryKeyword, ...(page.supportingKeywords || [])].join(", "))}" />` : ""}
     <title>${escapeHtml(pageTitle)}</title>
     <meta name="description" content="${escapeHtml(page.description)}" />
+    <link rel="alternate" href="${escapeHtml(canonical)}" hreflang="en" />
+    <link rel="alternate" href="${escapeHtml(canonical)}" hreflang="x-default" />
     <meta property="og:title" content="${escapeHtml(page.title)}" />
     <meta property="og:description" content="${escapeHtml(page.description)}" />
     <meta property="og:type" content="${page.pageType === "guide" ? "article" : "website"}" />
     <meta property="og:url" content="${escapeHtml(canonical)}" />
+    <meta property="og:site_name" content="${escapeHtml(site.name)}" />
+    <meta property="og:image" content="${site.origin}/assets/apple-touch-icon.png" />
+    <meta property="og:image:width" content="180" />
+    <meta property="og:image:height" content="180" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(page.title)}" />
+    <meta name="twitter:description" content="${escapeHtml(page.description)}" />
+    <meta name="twitter:image" content="${site.origin}/assets/apple-touch-icon.png" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" type="image/png" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght=300;400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/site.css" />
     ${renderConsentBootstrap()}
     ${jsonLd(page, context)}
@@ -906,10 +936,20 @@ Sitemap: ${site.origin}/sitemap-index.xml
 }
 
 export function renderSitemapSection(pages, site) {
+  const lastmod = new Date().toISOString().split("T")[0];
   const urls = pages
     .map((page) => {
       const href = page.slug ? `${site.origin}/${page.slug}/` : `${site.origin}/`;
-      return `<url><loc>${href}</loc></url>`;
+      let priority = "0.8";
+      let changefreq = "weekly";
+      if (page.slug === "") {
+        priority = "1.0";
+        changefreq = "daily";
+      } else if (page.pageType === "calculator" || page.pageType === "guide") {
+        priority = "0.9";
+        changefreq = "weekly";
+      }
+      return `<url><loc>${href}</loc><lastmod>${lastmod}</lastmod><changefreq>${changefreq}</changefreq><priority>${priority}</priority></url>`;
     })
     .join("");
 
